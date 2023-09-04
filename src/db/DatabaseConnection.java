@@ -3,7 +3,7 @@ package db;
 import java.sql.*;
 
 public class DatabaseConnection {
-    private static final String JDBC_URL = "jdbc:mysql://localhost:3306/laravel";
+    private static final String JDBC_URL = "jdbc:mysql://localhost:3306/gestion_de_bibliotheques";
     private static final String USERNAME = "root";
     private static final String PASSWORD = "";
 
@@ -22,15 +22,4 @@ public class DatabaseConnection {
         return connection;
     }
 
-
-    /** public void closeConnection() {
-        if (connection != null) {
-            try {
-                connection.close();
-                System.out.println("Connexion à la base de données fermée.");
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
-        }
-    }**/
 }
