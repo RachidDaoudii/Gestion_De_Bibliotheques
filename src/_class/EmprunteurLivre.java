@@ -1,30 +1,36 @@
 package _class;
 
+import java.time.LocalDate;
 import java.util.Date;
+import java.util.List;
 
 public class EmprunteurLivre {
-    private Livre livre;
+    private List<Livre> livres;
     private Emprunteur emprunteur;
-    private Date DateEmprunt;
-    private Date DateReteur;
+    private LocalDate DateEmprunt;
+    private LocalDate DateReteur;
 
-    public EmprunteurLivre(Livre livre, Emprunteur emprunteur, Date dateEmprunt, Date dateReteur) {
-        this.livre = livre;
+    public EmprunteurLivre(List<Livre> livre, Emprunteur emprunteur, LocalDate dateEmprunt, LocalDate dateReteur) {
+        this.livres = livre;
         this.emprunteur = emprunteur;
         DateEmprunt = dateEmprunt;
         DateReteur = dateReteur;
+        //System.out.println(livre.getISBN());
+        System.out.println(emprunteur.getNom());
+        System.out.println(dateEmprunt);
+        System.out.println(dateReteur);
     }
 
     public EmprunteurLivre(){
 
     }
 
-    public Livre getLivre() {
-        return livre;
+    public List<Livre> getLivre() {
+        return livres;
     }
 
-    public void setLivre(Livre livre) {
-        this.livre = livre;
+    public void addLivre(Livre livre) {
+        livres.add(livre); // Add Livre objects to the list
     }
 
     public Emprunteur getEmprunteur() {
@@ -35,19 +41,19 @@ public class EmprunteurLivre {
         this.emprunteur = emprunteur;
     }
 
-    public Date getDateEmprunt() {
+    public LocalDate getDateEmprunt() {
         return DateEmprunt;
     }
 
-    public void setDateEmprunt(Date dateEmprunt) {
+    public void setDateEmprunt(LocalDate dateEmprunt) {
         DateEmprunt = dateEmprunt;
     }
 
-    public Date getDateReteur() {
+    public LocalDate getDateReteur() {
         return DateReteur;
     }
 
-    public void setDateReteur(Date dateReteur) {
+    public void setDateReteur(LocalDate dateReteur) {
         DateReteur = dateReteur;
     }
 

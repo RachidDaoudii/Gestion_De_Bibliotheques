@@ -11,31 +11,14 @@ public class Main {
             System.out.println("Enter le choix : ");
             choix = in.nextLine();
             menu.direBonjourAvecSwitch(choix);
-        }while (!choix.equals("9"));
+        }while (!choix.equals("10"));
 
-
-
-
-
-        //livres.Afficher_livre_disponible();
-        //livres.Afficher_livre_empruntes();
-        //livres.Rechercher_livre("","Jane Smith");
-        //livres.Modifier_livre("N1");
-        //livres.setISBN("978-1234567890");
         //boolean er = livres.get_All_Isbn_Livres();
         /*if (er) {
             System.out.println("exist");
         } else {
             System.out.println("n exist pas");
         }*/
-
-        //dbConnection.closeConnection();
-        //Scanner in = new Scanner(System.in);
-        //
-        //
-
-
-
 
     }
 }
