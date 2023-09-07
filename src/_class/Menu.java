@@ -1,8 +1,6 @@
 package _class;
 
-import java.lang.reflect.Type;
-import java.util.List;
-import java.util.Scanner;
+import java.util.*;
 import java.time.LocalDate;
 
 public class Menu {
@@ -66,16 +64,22 @@ public class Menu {
             }
             case "3" -> {
                 String isbn;
+
                 System.out.println("Modifier un livre : ");
                 do {
                     System.out.println("Donner ISBN du livre : ");
                     isbn = in.nextLine();
 
-                    if (!isbn.isEmpty()) {
-                        livre.setISBN(isbn);
-                        livre.Modifier_livre(livre.getISBN());
-                    } else {
-                        System.out.println("ISBN ne peut pas être vide. Réessayez.");
+//                    if (!isbn.isEmpty()) {
+//                        livre.setISBN(isbn);
+//                        livre.Modifier_livre(livre.getISBN());
+//                    } else {
+//                        System.out.println("ISBN ne peut pas être vide. Réessayez.");
+//                    }
+                    if(livre.VerifierLivres(isbn)){
+                            livre.Modifier_livre(isbn);
+                    }else {
+                        System.out.println("Aucun livre trouvé avec cet ISBN.");
                     }
 
                 } while (isbn.isEmpty());
@@ -93,7 +97,6 @@ public class Menu {
                 String Cin;
                 String NomEmprunteur;
                 String PrenomEmprunteur;
-
                 do {
                     System.out.println("Donner ISBN du livre : ");
                     isbn = in.nextLine();
@@ -112,15 +115,30 @@ public class Menu {
                             System.out.println("Donner Prenom Emprunteur : ");
                             PrenomEmprunteur = in.nextLine();
                         } while (PrenomEmprunteur.isEmpty());
+                        EmprunteurLivre emprunteurLivre = new EmprunteurLivre();
 
                         emprunteur.setCin(Cin);
                         emprunteur.setNom(NomEmprunteur);
                         emprunteur.setPrenom(PrenomEmprunteur);
+
                         LocalDate dateEmprunt = LocalDate.now();
                         LocalDate dateReteur = dateEmprunt.plusDays(20);
 
-                        EmprunteurLivre emprunteurLivre = new EmprunteurLivre((List<Livre>) livre,emprunteur,dateEmprunt,dateReteur);
+                        livre.setISBN(isbn);
+                        livre.setTitre("Css");
+                        livre.setAuteur("test");
+                        livre.setQntTotal(200);
+                        livre.setQntEmprunt(50);
+                        livre.setQntPerdus(0);
 
+
+                        emprunteurLivre.addLivre(livre);
+                        emprunteurLivre.setEmprunteur(emprunteur);
+                        emprunteurLivre.setDateEmprunt(dateEmprunt);
+                        emprunteurLivre.setDateReteur(dateReteur);
+
+
+                        System.out.println(emprunteurLivre);
 
                     }else {
                         System.out.println("Aucun livre trouvé avec cet ISBN.");
@@ -137,13 +155,13 @@ public class Menu {
             }
             case "8" -> System.out.println("Retourner un livre");
             case "9" -> {
-                System.out.println("Rapport Satistique");
+                /*System.out.println("Rapport Satistique");
                 String Titre;
                 do {
                     System.out.println("Donner Tiire de livre : ");
                     Titre = in.nextLine();
                     livre.setTitre(Titre);
-                }while (Titre.isEmpty());
+                }while (Titre.isEmpty());*/
                 livre.Rapprot();
             }
             default -> {

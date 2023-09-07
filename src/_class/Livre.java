@@ -86,30 +86,24 @@ public class Livre {
 
     @Override
     public String toString() {
-        return "Livre{" +
-                "ISBN='" + ISBN + '\'' +
-                ", Titre='" + Titre + '\'' +
-                ", Auteur='" + Auteur + '\'' +
-                ", Statut='" + Statut + '\'' +
-                ", QntTotal=" + QntTotal +
-                ", QntEmprunt=" + QntEmprunt +
-                ", QntPerdus=" + QntPerdus +
-                '}';
+        return """
+                -----------------------------------------------------------------------------------------------------
+                |                                        Livre                                                      |
+                -----------------------------------------------------------------------------------------------------
+                | Isbn             |Titre             | Auteur     | Statut     | QntTotal | QntEmprunt | QntPerdus |
+                """+String.format("| %-16s | %-16s | %-10s | %-10s | %-8d | %-10d | %-9d |\n",ISBN ,Titre, Auteur,Statut,getQntTotal() , QntEmprunt , QntPerdus)
+                +"-----------------------------------------------------------------------------------------------------";
     }
 
     DatabaseConnection db = new DatabaseConnection();
     Scanner in = new Scanner(System.in);
-
-
 
     public void Ajouter_livre(){
         String nouveauIsbn;
         String nouveauTitre;
         String nouvelAuteur;
         String QntTotal;
-        String QntEmprunt;
-        String QntPerdus;
-
+        setStatut("disponible");
         do {
             System.out.println("Donner nouveau Isbn : ");
             nouveauIsbn = in.nextLine();
@@ -132,35 +126,25 @@ public class Livre {
         do {
             System.out.println("Donner nouveau QntTotal : ");
             QntTotal = in.nextLine();
+            QntTotal = String.valueOf(Integer.parseInt(QntTotal));
+            setQntTotal(Integer.parseInt(QntTotal));
         } while (!Validation(QntTotal));
 
-        do {
-            System.out.println("Donner nouveau QntEmprunt : ");
-            QntEmprunt = in.nextLine();
-        } while (!Validation(QntEmprunt));
 
-        do {
-            System.out.println("Donner nouveau QntPerdus : ");
-            QntPerdus = in.nextLine();
-        } while (!Validation(QntPerdus));
 
-        String query = "INSERT INTO `livres`(`Isbn`, `Titre`, `Auteur`, `QntTotal`, `QntEmprunt`, `QntPerdus`) VALUES (?,?,?,?,?,?)";
+        String query = "INSERT INTO `livres`(`Isbn`, `Titre`, `Auteur`, `QntTotal`) VALUES (?,?,?,?)";
         try (PreparedStatement statement = db.getConnection().prepareStatement(query)){
             statement.setString(1, getISBN() );
             statement.setString(2, getTitre());
             statement.setString(3, getAuteur());
             statement.setString(4, QntTotal);
-            statement.setString(5, QntEmprunt);
-            statement.setString(6, QntPerdus);
             int rowsInserted = statement.executeUpdate();
             if (rowsInserted > 0) {
-                System.out.println("Livre ajouté avec succès !");
-            } else {
-                System.out.println("L'ajout du livre a échoué.");
+                System.out.println(toString());
             }
 
         } catch (SQLException e) {
-            e.printStackTrace();
+            System.out.println("L'ajout du livre a échoué. L'ISBN existe déjà dans la base de données.");
         }
 
     }
@@ -182,7 +166,7 @@ public class Livre {
                 int QntTotal = resultSet.getInt("QntTotal");
                 int QntEmprunt = resultSet.getInt("QntEmprunt");
                 int QntPerdus = resultSet.getInt("QntPerdus");
-                System.out.println(String.format("| %-16s | %-16s | %-10s | %-10s | %-8d | %-10d | %-9d |",Isbn ,Titre, Auteur,Statut,QntTotal , QntEmprunt , QntPerdus));
+                System.out.println(String.format("| %-16s | %-16s | %-10s | %-10s | %-8s | %-10d | %-9d |",Isbn ,Titre, Auteur,Statut,QntTotal , QntEmprunt , QntPerdus));
 
             }
             System.out.println("-----------------------------------------------------------------------------------------------------");
@@ -256,70 +240,78 @@ public class Livre {
         String QntEmprunt;
         String QntPerdus;
 
-        do {
 
-        } while (!Validation(isbn));
+        System.out.println("Donner nouveau Titre : ");
+        nouveauTitre = in.nextLine();
+        if (!nouveauTitre.isEmpty()){
+            setTitre(nouveauTitre);
+        }
 
-        do {
-            System.out.println("Donner nouveau Titre : ");
-            nouveauTitre = in.nextLine();
-        } while (!Validation(nouveauTitre));
 
-        do {
-            System.out.println("Donner nouveau Auteur : ");
-            nouvelAuteur = in.nextLine();
-        } while (!Validation(nouvelAuteur));
 
-        do {
-            System.out.println("Donner nouveau Statut : ");
-            nouveauStatut = in.nextLine();
-        } while (!Validation(nouveauStatut));
 
-        do {
-            System.out.println("Donner nouveau QntTotal : ");
-            QntTotal = in.nextLine();
-        } while (!Validation(QntTotal));
+        System.out.println("Donner nouveau Auteur : ");
+        nouvelAuteur = in.nextLine();
+        if (!nouvelAuteur.isEmpty()){
+            setAuteur(nouvelAuteur);
+        }
 
-        do {
-            System.out.println("Donner nouveau QntEmprunt : ");
-            QntEmprunt = in.nextLine();
-        } while (!Validation(QntEmprunt));
 
-        do {
-            System.out.println("Donner nouveau QntPerdus : ");
-            QntPerdus = in.nextLine();
-        } while (!Validation(QntPerdus));
+
+        System.out.println("Veuillez saisir le nouveau statut :");
+        System.out.println("Le statut peut être 'disponible' ou 'emprunte'");
+        nouveauStatut = in.nextLine();
+        if (nouveauStatut.equals("disponible") || nouveauStatut.equals("emprunte")){
+            if (!nouveauStatut.isEmpty()) {
+                setStatut(nouveauStatut);
+            }
+
+        }else {
+            System.out.println("Statut invalide. Le statut doit être 'disponible' ou 'emprunte'.");
+        }
+
+        System.out.println("Donner nouveau QntTotal : ");
+        QntTotal = in.nextLine();
+        if (!QntTotal.isEmpty()){
+            setQntTotal(Integer.parseInt(QntTotal));
+        }
+
+
+        System.out.println("Donner nouveau QntEmprunt : ");
+        QntEmprunt = in.nextLine();
+        if(!QntEmprunt.isEmpty()){
+            setQntEmprunt(Integer.parseInt(QntEmprunt));
+        }
+
+
+        System.out.println("Donner nouveau QntPerdus : ");
+        QntPerdus = in.nextLine();
+        if (!QntPerdus.isEmpty()){
+            setQntPerdus(Integer.parseInt(QntPerdus));
+        }
 
         String query = "UPDATE livres SET Titre = ?, Auteur = ?, Statut = ?,QntTotal = ?,QntEmprunt = ?,QntPerdus = ? WHERE Isbn = ?";
-
-
-
 
         try (PreparedStatement statement = db.getConnection().prepareStatement(query)) {
 
         // Définir les paramètres de la requête
-            statement.setString(1, nouveauTitre);
-            statement.setString(2, nouvelAuteur);
-            statement.setString(3, nouveauStatut);
-            statement.setString(4, QntTotal);
-            statement.setString(5, QntEmprunt);
-            statement.setString(6, QntPerdus);
-            statement.setString(7, isbn);
-
+            statement.setString(1, getTitre());
+            statement.setString(2, getAuteur());
+            statement.setString(3, getStatut());
+            statement.setInt(4, getQntTotal());
+            statement.setInt(5, getQntEmprunt());
+            statement.setInt(6, getQntPerdus());
+            statement.setString(7, getISBN());
 
             int rowCount = statement.executeUpdate();
 
             if (rowCount > 0) {
-                System.out.println("Livre modifié avec succès.");
+                System.out.println(toString());
             } else {
                 System.out.println("Aucun livre trouvé avec cet ISBN.");
             }
 
-            // N'oubliez pas de fermer la connexion et la déclaration lorsque vous avez terminé
         } catch (SQLException e) {
-            //e.printStackTrace();
-            //System.out.println(e.getMessage());
-            // Gérer les erreurs SQL ici
             System.err.println("Une erreur s'est produite lors de l'ajout du livre : " + e.getMessage());
         }
 
@@ -327,6 +319,15 @@ public class Livre {
 
     public static  boolean  Validation(String input){
         return !input.isEmpty();
+    }
+
+    public static boolean isInteger(String s) {
+        try {
+            Integer.parseInt(s);
+            return true;
+        } catch (NumberFormatException e) {
+            return false;
+        }
     }
 
     public boolean get_All_Isbn_Livres(){
@@ -352,21 +353,31 @@ public class Livre {
         do {
             System.out.println("Donner Isbn livre supprimer : ");
             isbn = in.nextLine();
+            setISBN(isbn);
         } while (!Validation(isbn));
 
         String query = "DELETE FROM `livres` WHERE Isbn = ?";
-        try (PreparedStatement statement = db.getConnection().prepareStatement(query)){
-            statement.setString(1, isbn);
-            int rowsDeleted = statement.executeUpdate();
-            if (rowsDeleted > 0) {
-                System.out.println("Livre supprimé avec succès !");
-            } else {
-                System.out.println("Aucun livre trouvé avec cet ISBN.");
-            }
+        System.out.println("Confirmez-vous la suppression de ces informations ? (Oui/Non)");
+        String confirmation = in.nextLine();
 
-        } catch (SQLException e) {
-            e.printStackTrace();
+        if (confirmation.equalsIgnoreCase("Oui")) {
+            try (PreparedStatement statement = db.getConnection().prepareStatement(query)){
+                statement.setString(1, getISBN());
+                int rowsDeleted = statement.executeUpdate();
+                if (rowsDeleted > 0) {
+                    System.out.println("Livre supprimé avec succès !");
+                } else {
+                    System.out.println("Aucun livre trouvé avec cet ISBN.");
+                }
+
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
         }
+        else {
+            System.out.println("La suppression a été annulée.");
+        }
+
 
     }
 
@@ -414,12 +425,22 @@ public class Livre {
     }
 
     public boolean VerifierLivres(String isbn){
-        String query = "SELECT Isbn from Livres where Isbn Like ? And Statut Like ?";
+        String query = "SELECT * from Livres where Isbn Like ?";
         try(PreparedStatement statement = db.getConnection().prepareStatement(query)){
             statement.setString(1,isbn);
-            statement.setString(2,"disponible");
             ResultSet resultSet = statement.executeQuery();
-            return resultSet.next();
+            if (resultSet.next()) {
+                setISBN(resultSet.getString("Isbn"));
+                setTitre(resultSet.getString("Titre"));
+                setAuteur(resultSet.getString("Auteur"));
+                setStatut(resultSet.getString("Statut"));
+                setQntTotal(resultSet.getInt("QntTotal"));
+                setQntEmprunt(resultSet.getInt("QntEmprunt"));
+                setQntPerdus(resultSet.getInt("QntPerdus"));
+                return true;
+            } else {
+                return false; // No matching book found
+            }
 
         }catch (Exception e){
             e.getMessage();
