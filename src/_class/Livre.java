@@ -96,6 +96,7 @@ public class Livre {
     }
 
     DatabaseConnection db = new DatabaseConnection();
+    EmprunteurLivre emprunteurLivre = new EmprunteurLivre();
     Scanner in = new Scanner(System.in);
 
     public void Ajouter_livre(){
@@ -203,10 +204,17 @@ public class Livre {
 
     public void Rechercher_livre(String titre , String auteur) {
         String query = "SELECT * FROM livres WHERE Titre LIKE ? OR Auteur LIKE ?";
-
         try (PreparedStatement statement = db.getConnection().prepareStatement(query)) {
-            statement.setString(1, titre );
-            statement.setString(2, auteur);
+            if (auteur.isEmpty()){
+                statement.setString(1, titre + "%");
+                statement.setString(2, auteur);
+
+            }else {
+                statement.setString(1, titre );
+                statement.setString(2, auteur+ "%");
+            }
+
+
             ResultSet resultSet = statement.executeQuery();
             System.out.println("-----------------------------------------------------------------------------------------------------");
             System.out.println("|                                               Détails du livre                                     |");
@@ -247,16 +255,11 @@ public class Livre {
             setTitre(nouveauTitre);
         }
 
-
-
-
         System.out.println("Donner nouveau Auteur : ");
         nouvelAuteur = in.nextLine();
         if (!nouvelAuteur.isEmpty()){
             setAuteur(nouvelAuteur);
         }
-
-
 
         System.out.println("Veuillez saisir le nouveau statut :");
         System.out.println("Le statut peut être 'disponible' ou 'emprunte'");
@@ -381,9 +384,6 @@ public class Livre {
 
     }
 
-    public void Emprunt_livre(){
-
-    }
     public void Retourner_livre(){
 
     }
@@ -404,25 +404,7 @@ public class Livre {
 
     }
 
-    public void Total_Livres_Emprunt(){
-        String query = "SELECT count(*) FROM livres WHERE Statut LIKE 'emprunte'";
-        try (PreparedStatement statement = db.getConnection().prepareStatement(query)){
-            ResultSet countResult = statement.executeQuery();
-            if (countResult.next()) {
-                int totalCount = countResult.getInt(1); // Assuming count(*) is the first column
-                System.out.println("Total des livres emprunts : " + totalCount);
-            } else {
-                System.out.println("No records found.");
-            }
-        }catch (SQLException e){
-            e.getMessage();
-        }
 
-    }
-
-    public void LivresPerdus(){
-
-    }
 
     public boolean VerifierLivres(String isbn){
         String query = "SELECT * from Livres where Isbn Like ?";
@@ -449,25 +431,26 @@ public class Livre {
     }
 
     public void Rapprot(){
-        String query = "SELECT Titre , QntTotal , QntEmprunt , QntPerdus FROM livres ";
+        String query = "SELECT Titre , QntTotal , QntEmprunt , QntPerdus , QntTotal - QntEmprunt as QntDisponible FROM livres ";
         try (PreparedStatement statement = db.getConnection().prepareStatement(query)){
             //statement.setString(1,getTitre());
             ResultSet resultSet = statement.executeQuery();
-            System.out.println("---------------------------------------------------------");
-            System.out.println("|                       Statistique                     |");
-            System.out.println("---------------------------------------------------------");
-            System.out.println("| Titre            | QntTotal | QntEmprunt | QntPerdus  |");
-            System.out.println("---------------------------------------------------------");
+            System.out.println("-------------------------------------------------------------------------");
+            System.out.println("|                               Statistique                              |");
+            System.out.println("-------------------------------------------------------------------------");
+            System.out.println("| Titre            | QntTotal | QntEmprunt | QntPerdus  | QntDisponible  |");
+            System.out.println("-------------------------------------------------------------------------");
 
             while (resultSet.next()) {
                 String Titre = resultSet.getString("Titre");
                 int QntTotal = resultSet.getInt("QntTotal");
                 int QntEmprunt = resultSet.getInt("QntEmprunt");
                 int QntPerdus = resultSet.getInt("QntPerdus");
-                System.out.println(String.format("| %-16s | %-8d | %-10d | %-9d |", Titre, QntTotal , QntEmprunt , QntPerdus));
+                int QntDisponible = resultSet.getInt("QntDisponible");
+                System.out.println(String.format("| %-16s | %-8d | %-10d | %-9d | %-9d |", Titre, QntTotal , QntEmprunt , QntPerdus , QntDisponible));
 
             }
-            System.out.println("---------------------------------------------------------");
+            System.out.println("-------------------------------------------------------------------------");
 
         }catch (SQLException e){
             e.getMessage();

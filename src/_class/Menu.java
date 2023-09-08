@@ -15,11 +15,10 @@ public class Menu {
                     3 _ Modifier un livre\s
                     4 _ Supprimer un livre\s
                     5 _ Afficher Les livre disponibles\s
-                    6 _ Afficher Les livre empruntes\s
-                    7 _ Emprunt un livre\s
-                    8 _ Retourner un livre\s
-                    9 _ Rapport Satistique\s
-                    10 _ Exit
+                    6 _ Emprunt un livre\s
+                    7 _ Retourner un livre\s
+                    8 _ Rapport Satistique\s
+                    9 _ Exit
             """
         );
     }
@@ -30,7 +29,7 @@ public class Menu {
     public void direBonjourAvecSwitch(String choix){
         Livre livre = new Livre();
         Emprunteur emprunteur = new Emprunteur();
-
+        EmprunteurLivre emprunteurLivre = new EmprunteurLivre();
         Scanner in = new Scanner(System.in);
 
         switch (choix) {
@@ -89,10 +88,8 @@ public class Menu {
                 livre.Supprimer_livre();
             }
             case "5" -> livre.LivresDisponible();
-            case "6" -> livre.LivresEmprunt();
-            case "7" -> {
+            case "6" -> {
                 System.out.println("Emprunt un livre");
-
                 String isbn;
                 String Cin;
                 String NomEmprunteur;
@@ -101,67 +98,70 @@ public class Menu {
                     System.out.println("Donner ISBN du livre : ");
                     isbn = in.nextLine();
                     if(livre.VerifierLivres(isbn)){
+                        //System.out.println(livre);
+
                         do {
                             System.out.println("Donner Cin Emprunteur : ");
                             Cin = in.nextLine();
+                            if(emprunteur.VerifierLivres(Cin)){
+                                emprunteur.setCin(Cin);
+                            }
+                            else {
+                                emprunteur.setCin(Cin);
+                                do {
+                                    System.out.println("Donner Nom Emprunteur : ");
+                                    NomEmprunteur = in.nextLine();
+                                    emprunteur.setNom(NomEmprunteur);
+
+                                } while (NomEmprunteur.isEmpty());
+
+                                do {
+                                    System.out.println("Donner Prenom Emprunteur : ");
+                                    PrenomEmprunteur = in.nextLine();
+                                    emprunteur.setPrenom(PrenomEmprunteur);
+                                } while (PrenomEmprunteur.isEmpty());
+                            }
                         } while (Cin.isEmpty());
-
-                        do {
-                            System.out.println("Donner Nom Emprunteur : ");
-                            NomEmprunteur = in.nextLine();
-                        } while (NomEmprunteur.isEmpty());
-
-                        do {
-                            System.out.println("Donner Prenom Emprunteur : ");
-                            PrenomEmprunteur = in.nextLine();
-                        } while (PrenomEmprunteur.isEmpty());
-                        EmprunteurLivre emprunteurLivre = new EmprunteurLivre();
-
-                        emprunteur.setCin(Cin);
-                        emprunteur.setNom(NomEmprunteur);
-                        emprunteur.setPrenom(PrenomEmprunteur);
 
                         LocalDate dateEmprunt = LocalDate.now();
                         LocalDate dateReteur = dateEmprunt.plusDays(20);
-
-                        livre.setISBN(isbn);
-                        livre.setTitre("Css");
-                        livre.setAuteur("test");
-                        livre.setQntTotal(200);
-                        livre.setQntEmprunt(50);
-                        livre.setQntPerdus(0);
-
 
                         emprunteurLivre.addLivre(livre);
                         emprunteurLivre.setEmprunteur(emprunteur);
                         emprunteurLivre.setDateEmprunt(dateEmprunt);
                         emprunteurLivre.setDateReteur(dateReteur);
-
-
-                        System.out.println(emprunteurLivre);
+                        emprunteur.Ajouter_Emprunteur();
+                        emprunteurLivre.add_EmprunteurLivre();
 
                     }else {
                         System.out.println("Aucun livre trouvé avec cet ISBN.");
                     }
 
-                    /** if (!isbn.isEmpty()) {
-                        livre.setISBN(isbn);
-
-                    } else {
-                        System.out.println("ISBN ne peut pas être vide. Réessayez.");
-                    }**/
-
                 } while (isbn.isEmpty());
             }
-            case "8" -> System.out.println("Retourner un livre");
-            case "9" -> {
-                /*System.out.println("Rapport Satistique");
-                String Titre;
+            case "7" -> {
+                String isbn;
+                String Cin;
                 do {
-                    System.out.println("Donner Tiire de livre : ");
-                    Titre = in.nextLine();
-                    livre.setTitre(Titre);
-                }while (Titre.isEmpty());*/
+                    System.out.println("Donner ISBN du livre : ");
+                    isbn = in.nextLine();
+                    if (livre.VerifierLivres(isbn)) {
+                        do{
+                            System.out.println("Donner Cin Emprunteur : ");
+                            Cin = in.nextLine();
+                        }while (Cin.isEmpty());
+
+                        if(emprunteurLivre.VerifierLivresEmprunt(isbn,Cin)){
+                            emprunteurLivre.supprimerEmprunteur(isbn,Cin);
+                        }else {
+                            System.out.println("Le livre n'est pas emprunté dans ce numéro cin");
+                        }
+                    }else {
+                        System.out.println("Aucun livre trouvé avec cet ISBN.");
+                    }
+                }while (isbn.isEmpty());
+            }
+            case "8" -> {
                 livre.Rapprot();
             }
             default -> {

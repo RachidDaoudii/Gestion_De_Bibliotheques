@@ -11,7 +11,7 @@ public class Main {
             System.out.println("Enter le choix : ");
             choix = in.nextLine();
             menu.direBonjourAvecSwitch(choix);
-        }while (!choix.equals("10"));
+        }while (!choix.equals("9"));
 
     }
 }

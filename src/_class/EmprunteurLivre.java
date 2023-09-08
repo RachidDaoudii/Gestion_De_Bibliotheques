@@ -1,9 +1,13 @@
 package _class;
 
+import java.sql.ResultSet;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
+import db.DatabaseConnection;
 
 public class EmprunteurLivre {
     private List<Livre> livres;
@@ -53,23 +57,75 @@ public class EmprunteurLivre {
     public void setDateReteur(LocalDate dateReteur) {
         DateReteur = dateReteur;
     }
+    DatabaseConnection db = new DatabaseConnection();
 
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
 
-
         for (Livre livre : livres) {
-            sb.append("  Livre=").append(livre.getISBN()).append("\n");
-            sb.append("  Livre=").append(livre.getTitre()).append("\n");
+            sb.append("Isbn Livre :").append(livre.getISBN()).append("\n");
+            sb.append("Title Livre :").append(livre.getTitre()).append("\n");
         }
 
-        sb.append("  Emprunteur=").append(emprunteur.getCin()).append(" ").append(emprunteur.getNom()).append("\n");
-        sb.append("  DateEmprunt=").append(DateEmprunt).append("\n");
-        sb.append("  DateReteur=").append(DateReteur).append("\n");
+        sb.append("Cin Emprunteur :").append(emprunteur.getCin()).append("\n");
+        sb.append("Emprunteur :").append(emprunteur.getPrenom()).append(" ").append(emprunteur.getNom()).append("\n");
+        sb.append("DateEmprunt :").append(DateEmprunt).append("\n");
+        sb.append("DateReteur :").append(DateReteur).append("\n");
 
 
 
         return sb.toString();
+    }
+
+    public void add_EmprunteurLivre(){
+        String query ="INSERT INTO `emprunteurlivre`(`Cin`, `Isbn`, `DateEmprunt`, `DateReteur`) VALUES (?,?,?,?)";
+        try(PreparedStatement statement = db.getConnection().prepareStatement(query)){
+            for (Livre livre : livres) {
+                statement.setString(1, emprunteur.getCin());
+                statement.setString(2, livre.getISBN());
+                statement.setString(3, String.valueOf(DateEmprunt));
+                statement.setString(4, String.valueOf(DateReteur));
+                int rowsInserted = statement.executeUpdate();
+                if (rowsInserted > 0) {
+                    System.out.println(toString());
+                }
+            }
+        }catch (SQLException e){
+            System.out.println( e.getMessage());
+        }
+    }
+
+    public boolean VerifierLivresEmprunt(String isbn,String cin){
+        String query = "SELECT * from Livres INNER JOIN emprunteurlivre on livres.Isbn = emprunteurlivre.Isbn INNER JOIN emprunteur ON emprunteurlivre.Cin = emprunteur.Cin and livres.Isbn LIKE ? and emprunteur.Cin LIKE ?";
+        try(PreparedStatement statement = db.getConnection().prepareStatement(query)){
+            statement.setString(1,isbn);
+            statement.setString(2,cin);
+            ResultSet resultSet = statement.executeQuery();
+            return resultSet.next();
+
+        }catch (Exception e){
+            return false;
+        }
+
+    }
+
+    public boolean supprimerEmprunteur(String isbn , String cin){
+        String query = "DELETE FROM emprunteurlivre WHERE Isbn LIKE ? and Cin LIKE ?";
+        try(PreparedStatement statement = db.getConnection().prepareStatement(query)){
+            statement.setString(1,isbn);
+            statement.setString(2,cin);
+            int rowsDeleted = statement.executeUpdate();
+            if (rowsDeleted > 0) {
+                System.out.println("Livre Emprunté il est supprimé avec succès !");
+                return true;
+            } else {
+                System.out.println("Aucun livre Emprunté avec cet ISBN et Cin");
+                return false;
+            }
+        }catch (SQLException e){
+            System.out.println(e.getMessage());
+            return false;
+        }
     }
 }
