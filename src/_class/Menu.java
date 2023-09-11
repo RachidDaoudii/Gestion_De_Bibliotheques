@@ -69,12 +69,6 @@ public class Menu {
                     System.out.println("Donner ISBN du livre : ");
                     isbn = in.nextLine();
 
-//                    if (!isbn.isEmpty()) {
-//                        livre.setISBN(isbn);
-//                        livre.Modifier_livre(livre.getISBN());
-//                    } else {
-//                        System.out.println("ISBN ne peut pas être vide. Réessayez.");
-//                    }
                     if(livre.VerifierLivres(isbn)){
                             livre.Modifier_livre(isbn);
                     }else {
@@ -98,8 +92,6 @@ public class Menu {
                     System.out.println("Donner ISBN du livre : ");
                     isbn = in.nextLine();
                     if(livre.VerifierLivres(isbn)){
-                        //System.out.println(livre);
-
                         do {
                             System.out.println("Donner Cin Emprunteur : ");
                             Cin = in.nextLine();

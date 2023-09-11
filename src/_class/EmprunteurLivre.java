@@ -1,9 +1,9 @@
 package _class;
 
+import java.sql.Date;
 import java.sql.ResultSet;
 import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
@@ -110,11 +110,35 @@ public class EmprunteurLivre {
 
     }
 
-    public boolean supprimerEmprunteur(String isbn , String cin){
-        String query = "DELETE FROM emprunteurlivre WHERE Isbn LIKE ? and Cin LIKE ?";
+    public void supprimerEmprunteur(String isbn , String cin){
+        String query ="SELECT id FROM `emprunteurlivre` WHERE Isbn LIKE ? and Cin LIKE ? and supprimer is null";
+        ArrayList<Integer> listID = new ArrayList<Integer>();
+
         try(PreparedStatement statement = db.getConnection().prepareStatement(query)){
             statement.setString(1,isbn);
             statement.setString(2,cin);
+            ResultSet resultSet = statement.executeQuery();
+            while (resultSet.next()) {
+                int id = resultSet.getInt("id");
+                listID.add(id);
+            }
+            if (listID.size() > 0){
+                int _id = listID.get(0);
+                supprimer(_id);
+            }else {
+                System.out.println("Le livre n'est pas emprunté.");
+            }
+        }catch (SQLException e){
+            System.out.println(e.getMessage());
+        }
+
+    }
+
+    public  boolean supprimer(int id){
+        String query = "UPDATE emprunteurlivre SET supprimer = ? WHERE Id LIKE ? ";
+        try(PreparedStatement statement = db.getConnection().prepareStatement(query)){
+            statement.setDate(1, Date.valueOf(LocalDate.now()));
+            statement.setInt(2,id);
             int rowsDeleted = statement.executeUpdate();
             if (rowsDeleted > 0) {
                 System.out.println("Livre Emprunté il est supprimé avec succès !");
@@ -128,4 +152,5 @@ public class EmprunteurLivre {
             return false;
         }
     }
+
 }
