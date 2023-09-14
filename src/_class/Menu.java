@@ -26,8 +26,7 @@ public class Menu {
     public Menu() {
     }
     Livre livre = new Livre();
-    Emprunteur emprunteur = new Emprunteur();
-    EmprunteurLivre emprunteurLivre = new EmprunteurLivre();
+
     Scanner in = new Scanner(System.in);
     public void direBonjourAvecSwitch(String choix){
 
@@ -88,6 +87,8 @@ public class Menu {
                 String Cin;
                 String NomEmprunteur;
                 String PrenomEmprunteur;
+                Emprunteur emprunteur = new Emprunteur();
+                EmprunteurLivre emprunteurLivre = new EmprunteurLivre();
                 do {
                     System.out.println("Donner ISBN du livre : ");
                     isbn = in.nextLine();
@@ -133,6 +134,7 @@ public class Menu {
             case "7" -> {
                 String isbn;
                 String Cin;
+                EmprunteurLivre emprunteurLivre = new EmprunteurLivre();
                 do {
                     System.out.println("Donner ISBN du livre : ");
                     isbn = in.nextLine();
