@@ -31,7 +31,7 @@ public class EmprunteurLivre {
     }
 
     public void addLivre(Livre livre) {
-        livres.add(livre); // Add Livre objects to the list
+        livres.add(livre);
     }
 
     public Emprunteur getEmprunteur() {

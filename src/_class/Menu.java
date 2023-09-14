@@ -25,12 +25,12 @@ public class Menu {
 
     public Menu() {
     }
-
+    Livre livre = new Livre();
+    Emprunteur emprunteur = new Emprunteur();
+    EmprunteurLivre emprunteurLivre = new EmprunteurLivre();
+    Scanner in = new Scanner(System.in);
     public void direBonjourAvecSwitch(String choix){
-        Livre livre = new Livre();
-        Emprunteur emprunteur = new Emprunteur();
-        EmprunteurLivre emprunteurLivre = new EmprunteurLivre();
-        Scanner in = new Scanner(System.in);
+
 
         switch (choix) {
             case "1" -> {
@@ -60,6 +60,7 @@ public class Menu {
                     }
                     default -> System.out.println("Choix non valide");
                 }
+
             }
             case "3" -> {
                 String isbn;
@@ -78,7 +79,6 @@ public class Menu {
                 } while (isbn.isEmpty());
             }
             case "4" -> {
-                System.out.println("Supprimer un livre");
                 livre.Supprimer_livre();
             }
             case "5" -> livre.LivresDisponible();
@@ -95,7 +95,7 @@ public class Menu {
                         do {
                             System.out.println("Donner Cin Emprunteur : ");
                             Cin = in.nextLine();
-                            if(emprunteur.VerifierLivres(Cin)){
+                            if(emprunteur.VerifierEmprunteur(Cin)){
                                 emprunteur.setCin(Cin);
                             }
                             else {
@@ -117,7 +117,6 @@ public class Menu {
 
                         LocalDate dateEmprunt = LocalDate.now();
                         LocalDate dateReteur = dateEmprunt.plusDays(20);
-
                         emprunteurLivre.addLivre(livre);
                         emprunteurLivre.setEmprunteur(emprunteur);
                         emprunteurLivre.setDateEmprunt(dateEmprunt);
@@ -157,6 +156,7 @@ public class Menu {
                 livre.Rapprot();
             }
             default -> {
+                System.out.println();
             }
         }
 

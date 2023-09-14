@@ -61,7 +61,7 @@ public class Emprunteur {
         }
     }
 
-    public boolean VerifierLivres(String cin){
+    public boolean VerifierEmprunteur(String cin){
         String query = "SELECT * from Emprunteur where Cin Like ?";
         try(PreparedStatement statement = db.getConnection().prepareStatement(query)){
             statement.setString(1,cin);

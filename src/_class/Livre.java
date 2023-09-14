@@ -73,38 +73,30 @@ public class Livre {
     }
 
     public void setQntTotal(int qntTotal) {
-        //if (isInteger(qntTotal)) {
+        try {
             if (qntTotal >= 0) {
                 this.QntTotal = qntTotal;
             } else {
                 System.out.println("La quantité totale ne peut pas être négative.");
             }
-        /*} else {
-            System.out.println("La valeur entrée n'est pas un entier.");
-        }*/
+        } catch (Exception e) {
+            System.out.println("Vous devez entrer un nombre, pas une lettre."+ e.getMessage());
+        }
     }
 
     public void setQntEmprunt(int qntEmprunt) {
-        if (isInteger(qntEmprunt)) {
-            if (qntEmprunt >= 0) {
-                this.QntEmprunt = qntEmprunt;
-            } else {
-                System.out.println("La quantité emprunté ne peut pas être négative.");
-            }
+        if (qntEmprunt >= 0) {
+            this.QntEmprunt = qntEmprunt;
         } else {
-            System.out.println("La valeur entrée n'est pas un entier.");
+            System.out.println("La quantité emprunté ne peut pas être négative.");
         }
     }
 
     public void setQntPerdus(int qntPerdus) {
-        if (isInteger(qntPerdus)) {
-            if (qntPerdus >= 0) {
-                this.QntPerdus = qntPerdus;
-            } else {
-                System.out.println("La quantité perdus ne peut pas être négative.");
-            }
+        if (qntPerdus >= 0) {
+            this.QntPerdus = qntPerdus;
         } else {
-            System.out.println("La valeur entrée n'est pas un entier.");
+            System.out.println("La quantité perdus ne peut pas être négative.");
         }
     }
 
@@ -137,27 +129,26 @@ public class Livre {
             System.out.println("Donner nouveau Isbn : ");
             nouveauIsbn = in.nextLine();
             setISBN(nouveauIsbn);
-        } while (!Validation(nouveauIsbn));
+        } while (nouveauIsbn.isEmpty());
 
         do {
             System.out.println("Donner nouveau Titre : ");
             nouveauTitre = in.nextLine();
             setTitre(nouveauTitre);
-        } while (!Validation(nouveauTitre));
+        } while (nouveauTitre.isEmpty());
 
         do {
             System.out.println("Donner nouveau Auteur : ");
             nouvelAuteur = in.nextLine();
             setAuteur(nouvelAuteur);
-        } while (!Validation(nouvelAuteur));
+        } while (nouvelAuteur.isEmpty());
 
 
         do {
             System.out.println("Donner nouveau QntTotal : ");
             QntTotal = in.nextLine();
-            QntTotal = String.valueOf(Integer.parseInt(QntTotal));
             setQntTotal(Integer.parseInt(QntTotal));
-        } while (!Validation(QntTotal));
+        } while (QntTotal.isEmpty());
 
 
 
@@ -166,7 +157,7 @@ public class Livre {
             statement.setString(1, getISBN() );
             statement.setString(2, getTitre());
             statement.setString(3, getAuteur());
-            statement.setString(4, QntTotal);
+            statement.setInt(4, getQntTotal());
             int rowsInserted = statement.executeUpdate();
             if (rowsInserted > 0) {
                 System.out.println(toString());
@@ -196,32 +187,6 @@ public class Livre {
                 int QntEmprunt = resultSet.getInt("QntEmprunt");
                 int QntPerdus = resultSet.getInt("QntPerdus");
                 System.out.println(String.format("| %-16s | %-16s | %-10s | %-10s | %-8s | %-10d | %-9d |",Isbn ,Titre, Auteur,Statut,QntTotal , QntEmprunt , QntPerdus));
-
-            }
-            System.out.println("-----------------------------------------------------------------------------------------------------");
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-    }
-
-    public void LivresEmprunt() {
-        String query = "SELECT * FROM livres where Statut Like 'emprunte'";
-        try (PreparedStatement statement = db.getConnection().prepareStatement(query)) {
-            ResultSet resultSet = statement.executeQuery();
-            System.out.println("-----------------------------------------------------------------------------------------------------");
-            System.out.println("|                                       Détails des livres emprunts                                  |");
-            System.out.println("-----------------------------------------------------------------------------------------------------");
-            System.out.println("| Isbn             |Titre             | Auteur     | Statut     | QntTotal | QntEmprunt | QntPerdus  |");
-            System.out.println("-----------------------------------------------------------------------------------------------------");
-            while (resultSet.next()) {
-                String Isbn = resultSet.getString("Isbn");
-                String Titre = resultSet.getString("Titre");
-                String Auteur = resultSet.getString("Auteur");
-                String Statut = resultSet.getString("Statut");
-                int QntTotal = resultSet.getInt("QntTotal");
-                int QntEmprunt = resultSet.getInt("QntEmprunt");
-                int QntPerdus = resultSet.getInt("QntPerdus");
-                System.out.println(String.format("| %-16s | %-16s | %-10s | %-10s | %-8d | %-10d | %-9d |",Isbn ,Titre, Auteur,Statut,QntTotal , QntEmprunt , QntPerdus));
 
             }
             System.out.println("-----------------------------------------------------------------------------------------------------");
@@ -307,9 +272,7 @@ public class Livre {
         System.out.println("Donner nouveau QntTotal : ");
         QntTotal = in.nextLine();
         if (!QntTotal.isEmpty()){
-            if(isInteger(Integer.parseInt(QntTotal))){
-                setQntTotal(Integer.parseInt(QntTotal));
-            }else System.out.println("fsdfsdfsdf");
+            setQntTotal(Integer.parseInt(QntTotal));
         }
 
         System.out.println("Donner nouveau QntEmprunt : ");
@@ -352,10 +315,6 @@ public class Livre {
 
     }
 
-    public static  boolean  Validation(String input){
-        return !input.isEmpty();
-    }
-
     public void Supprimer_livre(){
         String isbn;
 
@@ -363,7 +322,7 @@ public class Livre {
             System.out.println("Donner Isbn livre supprimer : ");
             isbn = in.nextLine();
             setISBN(isbn);
-        } while (!Validation(isbn));
+        } while (isbn.isEmpty());
 
         String query = "DELETE FROM `livres` WHERE Isbn = ?";
         System.out.println("Confirmez-vous la suppression de ces informations ? (Oui/Non)");
@@ -413,7 +372,7 @@ public class Livre {
     }
 
     public void Rapprot(){
-        String query = "SELECT Isbn, Titre, QntTotal, QntEmprunt, QntPerdus, QntTotal - QntEmprunt AS QntDisponible, CASE WHEN QntTotal - QntEmprunt = 0 THEN 'Emprunté' ELSE 'Disponible' END AS Disponibilite FROM livres;";
+        String query = "SELECT Isbn, Titre, QntTotal, QntEmprunt, QntPerdus, QntTotal - QntEmprunt AS QntDisponible,  Statut AS Disponibilite FROM livres";
         try (PreparedStatement statement = db.getConnection().prepareStatement(query)){
             ResultSet resultSet = statement.executeQuery();
             System.out.println("-------------------------------------------------------------------");
@@ -439,10 +398,4 @@ public class Livre {
         }
     }
 
-    public boolean isInteger(Object value) {
-        return value instanceof Integer;
-    }
-    public boolean isString(Object value) {
-        return value instanceof String;
-    }
 }
